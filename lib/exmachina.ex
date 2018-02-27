@@ -23,9 +23,9 @@ defmodule ExMachina do
     case status do
       :ok -> #Update fsm state data
              new_fsm_object = fsm_object |> Map.put(:data, data)
-             {:ok, initial_state, new_fsm_object, [{:timeout, timeout, :stop_after_timeout}]}                
+             {:ok, initial_state, new_fsm_object, [{:state_timeout, timeout, :stop_after_timeout}]}                
       _   -> IO.puts "Error initializing FSM"                      
-             {:error, initial_state, fsm_object, [{:timeout, timeout, :stop_after_timeout}]}
+             {:error, initial_state, fsm_object, [{:state_timeout, timeout, :stop_after_timeout}]}
     end
   end
 
@@ -57,7 +57,7 @@ defmodule ExMachina do
       _ -> IO.puts "Error handling info event"                                 
     end
 
-    {:next_state, state, new_fsm_object, [{:timeout, data.timeout, :wait_unlock_time}]}
+    {:next_state, state, new_fsm_object, [{:state_timeout, new_fsm_object.timeout, :stop_after_timeout}]}
   end
 
   @impl :gen_statem
@@ -70,11 +70,11 @@ defmodule ExMachina do
                    |> Map.put(:data, data)
 
     #[3] Determine what the next state is from the transition table                
-    (for transition <- fsm_object.transition_table,((input_mapped_value == transition.input_value) && (state == transition.current_state)),do: transition.next_state)
+    (for transition <- fsm_object.transition_table,((input_mapped_value == transition.input_value) && (state == transition.current_state)),do: {transition.next_state, transition.timeout})
       |> List.first
       |> case do
            nil        -> {:next_state, state, fsm_object, [{:state_timeout, fsm_object.timeout, :stop_after_timeout}]}
-           next_state -> {:next_state, next_state, fsm_object, [{:state_timeout, fsm_object.timeout, :stop_after_timeout}]}
+           {next_state, timeout} -> {:next_state, next_state, fsm_object, [{:state_timeout, timeout, :stop_after_timeout}]}
          end    
   end
 
@@ -86,6 +86,11 @@ defmodule ExMachina do
     fsm_object = fsm_object
       |> Map.put(:data, reset_data)
 
-    {:next_state, :locked, fsm_object, []}
+    (for transition <- fsm_object.transition_table,((transition.on_event == :timeout) && (state == transition.current_state)),do: transition.next_state)
+      |> List.first
+      |> case do
+           nil        -> {:next_state, state, fsm_object, [{:state_timeout, fsm_object.timeout, :stop_after_timeout}]}
+           next_state -> {:next_state, next_state, fsm_object, [{:state_timeout, fsm_object.timeout, :stop_after_timeout}]}
+         end  
   end
 end

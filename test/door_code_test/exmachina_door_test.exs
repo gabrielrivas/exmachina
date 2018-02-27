@@ -12,11 +12,12 @@ defmodule DoorCodeTest do
     fsm_data = DoorData.new() 
                  |> Map.put(:code, @code) 
                  |> Map.put(:remaining, @code) 
-                 |> Map.put(:timeout, @open_time)
+                 |> Map.put(:unlock_time, @open_time)
 
     transitions = [Transition.new()
                     |> Map.put(:current_state, :locked)
                     |> Map.put(:input_value, :not_equal) 
+                    |> Map.put(:next_state, :locked)
                     |> Map.put(:next_state, :locked)      
                     |> Map.put(:timeout, @open_time),
                   Transition.new()
@@ -28,7 +29,14 @@ defmodule DoorCodeTest do
                     |> Map.put(:current_state, :locked)
                     |> Map.put(:input_value, :equal) 
                     |> Map.put(:next_state, :open)
-                    |> Map.put(:timeout, @open_time)]   
+                    |> Map.put(:timeout, @open_time),
+                  Transition.new()
+                    |> Map.put(:current_state, :open)
+                    |> Map.put(:input_value, nil) 
+                    |> Map.put(:next_state, :locked)
+                    |> Map.put(:on_event, :timeout)
+                    |> Map.put(:timeout, @open_time),
+                  ]   
                    
     test_fsm = FSMCore.new
               |> Map.put(:states, [:locked, :open])
@@ -66,5 +74,28 @@ defmodule DoorCodeTest do
 
     # Verify that it is locked again after the specified time
     assert :gen_statem.call(door, :get_state) == :locked
+
+
+    send(door, "Another input message !!!")
+
+    assert :gen_statem.call(door, :get_state) == :locked
+
+    :gen_statem.cast(door, {:input_event, 1})
+    :timer.sleep(1500)
+
+    :gen_statem.cast(door, {:input_event, 1})
+    assert :gen_statem.call(door, :get_state) == :locked
+
+    :gen_statem.cast(door, {:input_event, 2})
+    assert :gen_statem.call(door, :get_state) == :locked
+
+    :gen_statem.cast(door, {:input_event, 3})
+
+    # Verify that it is unlocked after the correct code is entered
+    assert :gen_statem.call(door, :get_state) == :open
+    :timer.sleep(5000)
+
+    # Verify that it is locked again after the specified time
+    assert :gen_statem.call(door, :get_state) == :locked    
   end
 end
