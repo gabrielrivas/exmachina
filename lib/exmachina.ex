@@ -13,6 +13,10 @@ defmodule ExMachina do
     :handle_event_function
   end
 
+  def code_change(_vsn, state, data, _extra) do
+    {:ok, state, data}
+  end
+
   def init([{fsm_object, initial_state, timeout}]) do 
     {status, data} = apply(fsm_object.module_logic, fsm_object.initialization_function, [fsm_object.data])
     
