@@ -37,7 +37,7 @@ defmodule DoorLogic do
   end
 
   def check_code( _ , _digit, _data) do
-    IO.puts ("transition not supported")
+    IO.puts ("Nothing to do on this transition!")
   end  
 
   def reset_logic(%DoorData{} = data) do

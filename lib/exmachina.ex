@@ -45,7 +45,6 @@ defmodule ExMachina do
   end
 
   def handle_event({:call, from}, :get_state, state, fsm_object) do
-    IO.puts(" *********** In state : #{state}")
     {:next_state, state, fsm_object, [{:reply, from, state}]}
   end
 
@@ -81,7 +80,7 @@ defmodule ExMachina do
 
   # Event Timeout Events
   def handle_event(:state_timeout, :stop_after_timeout, state, fsm_object) do
-    IO.puts("State * #{inspect state} * timed out")
+    # On state timeout apply function to re-initialize data
     reset_data = apply(fsm_object.module_logic, fsm_object.reset_function, [fsm_object.data])
     
     fsm_object = fsm_object
