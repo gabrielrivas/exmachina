@@ -16,10 +16,10 @@ defmodule ExMachina do
   def init([{fsm_object, initial_state, timeout}]) do 
     {status, data} = apply(fsm_object.module_logic, fsm_object.initialization_function, [fsm_object.data])
     
-    fsm_object = case status do
+    case status do
       :ok -> #Update fsm state data
-             fsm_object |> Map.put(:data, data)
-             {:ok, initial_state, fsm_object, [{:timeout, timeout, :stop_after_timeout}]}                
+             new_fsm_object = fsm_object |> Map.put(:data, data)
+             {:ok, initial_state, new_fsm_object, [{:timeout, timeout, :stop_after_timeout}]}                
       _   -> IO.puts "Error initializing FSM"                      
              {:error, initial_state, fsm_object, [{:timeout, timeout, :stop_after_timeout}]}
     end
