@@ -60,14 +60,14 @@ defmodule ExMachina do
   @impl :gen_statem
   def handle_event(:cast, {:input_event, input_value}, state, fsm_object) do
     #[1] Map input to fsm event
-    {input_check, data} = apply(fsm_object.module_logic, fsm_object.input_maping_function, [state, input_value, fsm_object.data])
+    {input_mapped_value, data} = apply(fsm_object.module_logic, fsm_object.input_maping_function, [state, input_value, fsm_object.data])
     
     #[2] Update fsm state data
     fsm_object = fsm_object
                    |> Map.put(:data, data)
 
     #[3] Determine what the next state is from the transition table                
-    (for transition <- fsm_object.transition_table,((input_check == transition.input_check) && (state == transition.current_state)),do: transition.next_state)
+    (for transition <- fsm_object.transition_table,((input_mapped_value == transition.input_value) && (state == transition.current_state)),do: transition.next_state)
       |> List.first
       |> case do
            nil        -> {:next_state, state, fsm_object, [{:state_timeout, fsm_object.timeout, :stop_after_timeout}]}

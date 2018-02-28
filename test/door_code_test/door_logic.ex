@@ -36,11 +36,11 @@ defmodule DoorLogic do
     end
   end
 
-  def reset_logic(%DoorData{} = data) do
-    data |> Map.put(:remaining, data.code)
-  end  
-
   def check_code( _ , _digit, _data) do
     IO.puts ("transition not supported")
+  end  
+
+  def reset_logic(%DoorData{} = data) do
+    data |> Map.put(:remaining, data.code)
   end  
 end

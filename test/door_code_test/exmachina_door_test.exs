@@ -16,17 +16,17 @@ defmodule DoorCodeTest do
 
     transitions = [Transition.new()
                     |> Map.put(:current_state, :locked)
-                    |> Map.put(:input_check, :not_equal) 
+                    |> Map.put(:input_value, :not_equal) 
                     |> Map.put(:next_state, :locked)      
                     |> Map.put(:timeout, @open_time),
                   Transition.new()
                     |> Map.put(:current_state, :locked) 
-                    |> Map.put(:input_check, :equal_and_rest)
+                    |> Map.put(:input_value, :equal_and_rest)
                     |> Map.put(:next_state, :locked)
                     |> Map.put(:timeout, @open_time),
                   Transition.new()
                     |> Map.put(:current_state, :locked)
-                    |> Map.put(:input_check, :equal) 
+                    |> Map.put(:input_value, :equal) 
                     |> Map.put(:next_state, :open)
                     |> Map.put(:timeout, @open_time)]   
                    
