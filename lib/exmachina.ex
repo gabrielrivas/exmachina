@@ -48,14 +48,13 @@ defmodule ExMachina do
   def handle_event(:info, info_data, state, fsm_object) do
     {status, data} = apply(fsm_object.module_logic, fsm_object.info_handler, [fsm_object.data, info_data])
     
-    case status do
+    new_fsm_object = case status do
       :ok -> #Update fsm state data
-             fsm_object = fsm_object
-                            |> Map.put(:data, data)                            
+             fsm_object |> Map.put(:data, data)                            
       _ -> IO.puts "Error handling info event"                                 
     end
 
-    {:next_state, state, fsm_object, [{:timeout, data.timeout, :wait_unlock_time}]}
+    {:next_state, state, new_fsm_object, [{:timeout, data.timeout, :wait_unlock_time}]}
   end
 
   @impl :gen_statem
