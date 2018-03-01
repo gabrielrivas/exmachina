@@ -17,7 +17,6 @@ defmodule DoorCodeTest do
     transitions = [Transition.new()
                     |> Map.put(:current_state, :locked)
                     |> Map.put(:input_value, :not_equal) 
-                    |> Map.put(:next_state, :locked)
                     |> Map.put(:next_state, :locked)      
                     |> Map.put(:timeout, @open_time),
                   Transition.new()
@@ -39,7 +38,9 @@ defmodule DoorCodeTest do
                   ]   
                    
     test_fsm = FSMCore.new
+              |> Map.put(:type, :event_driven)
               |> Map.put(:states, [:locked, :open])
+              |> Map.put(:initial_state, :locked)
               |> Map.put(:data, fsm_data)
               |> Map.put(:module_logic, DoorLogic)
               |> Map.put(:initialization_function, :initialization)
@@ -50,7 +51,7 @@ defmodule DoorCodeTest do
               |> Map.put(:timeout, @open_time) 
                    
 
-    {:ok, door} = ExMachina.start_link(test_fsm, :locked, @open_time)                     
+    {:ok, door} = ExMachina.start_link(test_fsm, @open_time)                     
 
     #Test info handler
     send(door, "Some input message !!!")

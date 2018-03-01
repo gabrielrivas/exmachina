@@ -19,3 +19,6 @@ Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_do
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
 be found at [https://hexdocs.pm/exmachina](https://hexdocs.pm/exmachina).
 
+## Run Tests
+mix test test/door_code_test/exmachina_door_test.exs
+mix test test/sequence_generator/generator_test.ex 
