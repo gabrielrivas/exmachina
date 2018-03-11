@@ -1,5 +1,6 @@
 defmodule FSMCore do
-  defstruct type: nil,
+  defstruct name: "",
+            type: nil,
             states: nil,
             initial_state: nil,            
             data: nil,
