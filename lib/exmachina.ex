@@ -44,8 +44,8 @@ defmodule ExMachina do
     :gen_statem.call(via_tuple(fsm_name), {:restart})
   end
 
-  def stop(pid) do
-    :gen_statem.stop(pid)
+  def stop(fsm_name) do
+    :gen_statem.stop(via_tuple(fsm_name))
   end
 
   def handle_event({:call, _from}, :restart, state, fsm_object) do
