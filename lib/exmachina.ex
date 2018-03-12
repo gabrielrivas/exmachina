@@ -5,7 +5,11 @@ defmodule ExMachina do
 
   # Client API
   def start_link(fsm_object, timeout) do
-    :gen_statem.start({:local,@name}, __MODULE__, [{fsm_object, timeout}], [])
+    :gen_statem.start({:global, via_tuple(fsm_object.name)}, __MODULE__, [{fsm_object, timeout}], [])
+  end
+
+  defp via_tuple(fsm_name) do
+    {:via, :gproc, {:n, :g, {:exfsm, fsm_name}}}
   end
 
   # Callbacks
@@ -32,16 +36,16 @@ defmodule ExMachina do
     :void
   end
 
-  def get_state(pid) do
-    :gen_statem.call(@name, {:get_state})
+  def get_state(fsm_name) do
+    :gen_statem.call(via_tuple(fsm_name), {:get_state})
   end
 
-  def restart(pid) do
-    :gen_statem.call(@name, {:restart})
+  def restart(fsm_name) do
+    :gen_statem.call(via_tuple(fsm_name), {:restart})
   end
 
-  def stop do
-    :gen_statem.stop(@name)
+  def stop(fsm_name) do
+    :gen_statem.stop(via_tuple(fsm_name))
   end
 
   def handle_event({:call, _from}, :restart, state, fsm_object) do
@@ -51,8 +55,8 @@ defmodule ExMachina do
   # ...
   ### Client API
   # ...
-  def input_event(input_value) do
-    :gen_statem.cast(@name, {:input_event, input_value})
+  def input_event(fsm_name, input_value) do
+    :gen_statem.cast(via_tuple(fsm_name), {:input_event, input_value})
   end
 
   def handle_event({:call, from}, :get_state, state, fsm_object) do
@@ -122,3 +126,4 @@ defmodule ExMachina do
         end         
   end
 end
+
