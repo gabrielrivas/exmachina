@@ -113,16 +113,17 @@ defmodule ExMachina do
     #[1] Process current state
     apply(fsm_object.module_logic, fsm_object.state_process, [state, fsm_object.data])
       |> case do
-           {:ok, data} -> fsm_object = fsm_object |> Map.put(:data, data)
+           {:error, data} -> {:next_state, state, fsm_object, [{:state_timeout, fsm_object.timeout, :stop_after_timeout}]}
+           {result_value, data} -> fsm_object = fsm_object |> Map.put(:data, data)
 
                           #[3] Determine what the next state is from the transition table                
-                          (for transition <- fsm_object.transition_table,(state == transition.current_state), do: {transition.next_state, transition.timeout})
+                          (for transition <- fsm_object.transition_table,((result_value == transition.input_value) && (state == transition.current_state)), do: {transition.next_state, transition.timeout})
                           |> List.first
                           |> case do
                               nil        -> {:next_state, state, fsm_object, [{:state_timeout, fsm_object.timeout, :stop_after_timeout}]}
                               {next_state, timeout} -> {:next_state, next_state, fsm_object, [{:state_timeout, timeout, :stop_after_timeout}]}
                           end
-           _ -> {:next_state, state, fsm_object, [{:state_timeout, fsm_object.timeout, :stop_after_timeout}]}                 
+                            
         end         
   end
 end
