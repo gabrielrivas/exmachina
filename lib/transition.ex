@@ -1,7 +1,7 @@
 defmodule Transition do
-  defstruct current_state: nil,
-            module_logic: nil,     
-            input_value: nil,            
+  defstruct current_state: nil,    
+            input_value: nil,
+            process_result: nil,            
             next_state: nil,
             on_event: nil, 
             timeout: 0

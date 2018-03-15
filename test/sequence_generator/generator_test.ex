@@ -12,47 +12,47 @@ defmodule GeneratorTest do
       transitions = [Transition.new()
                       |> Map.put(:current_state, :s1) 
                       |> Map.put(:next_state, :s2)   
-                      |> Map.put(:input_value, :ok) 
+                      |> Map.put(:process_result, :ok) 
                       |> Map.put(:timeout, @period_time),
                     Transition.new()
                       |> Map.put(:current_state, :s2) 
                       |> Map.put(:next_state, :s3)   
-                      |> Map.put(:input_value, :ok) 
+                      |> Map.put(:process_result, :ok) 
                       |> Map.put(:timeout, @period_time),
                     Transition.new()
                       |> Map.put(:current_state, :s3) 
                       |> Map.put(:next_state, :s4)   
-                      |> Map.put(:input_value, :ok) 
+                      |> Map.put(:process_result, :ok) 
                       |> Map.put(:timeout, @period_time),
                     Transition.new()
                     |> Map.put(:current_state, :s4) 
                     |> Map.put(:next_state, :s5)   
-                    |> Map.put(:input_value, :ok) 
+                    |> Map.put(:process_result, :ok) 
                     |> Map.put(:timeout, @period_time),
                     Transition.new()
                     |> Map.put(:current_state, :s5) 
                     |> Map.put(:next_state, :s6)  
-                    |> Map.put(:input_value, :ok)  
+                    |> Map.put(:process_result, :ok)  
                     |> Map.put(:timeout, @period_time),
                     Transition.new()
                     |> Map.put(:current_state, :s6) 
                     |> Map.put(:next_state, :s7)  
-                    |> Map.put(:input_value, :ok)  
+                    |> Map.put(:process_result, :ok)  
                     |> Map.put(:timeout, @period_time),
                     Transition.new()
                     |> Map.put(:current_state, :s7) 
                     |> Map.put(:next_state, :s8)  
-                    |> Map.put(:input_value, :ok)  
+                    |> Map.put(:process_result, :ok)  
                     |> Map.put(:timeout, @period_time),
                     Transition.new()
                     |> Map.put(:current_state, :s8) 
                     |> Map.put(:next_state, :s9)  
-                    |> Map.put(:input_value, :ok)  
+                    |> Map.put(:process_result, :ok)  
                     |> Map.put(:timeout, @period_time),
                     Transition.new()
                     |> Map.put(:current_state, :s9) 
                     |> Map.put(:next_state, :s1)  
-                    |> Map.put(:input_value, :ok)  
+                    |> Map.put(:process_result, :ok)  
                     |> Map.put(:timeout, @period_time),                                                                                                    
                     ]   
                      
