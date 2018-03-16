@@ -58,5 +58,9 @@
         IO.puts "Nothing to do here"  
         {:ok, data}                
     end
+
+    def reset_logic(data) do
+      {:ok, data}
+    end     
   end
   

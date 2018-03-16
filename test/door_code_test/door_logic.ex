@@ -41,6 +41,6 @@ defmodule DoorLogic do
   end  
 
   def reset_logic(%DoorData{} = data) do
-    data |> Map.put(:remaining, data.code)
+    {:ok, data |> Map.put(:remaining, data.code)}
   end  
 end

@@ -38,6 +38,7 @@ defmodule DoorCodeTest do
                   ]   
                    
     test_fsm = FSMCore.new
+              |> Map.put(:name, "door")
               |> Map.put(:type, :event_driven)
               |> Map.put(:states, [:locked, :open])
               |> Map.put(:initial_state, :locked)
@@ -56,47 +57,47 @@ defmodule DoorCodeTest do
     #Test info handler
     send(door, "Some input message !!!")
 
-    assert :gen_statem.call(door, :get_state) == :locked
+    assert ExMachina.call("door", :get_state) == :locked
 
-    :gen_statem.cast(door, {:input_event, 1})
+    ExMachina.cast("door", {:input_event, 1})
     :timer.sleep(1500)
 
-    :gen_statem.cast(door, {:input_event, 1})
-    assert :gen_statem.call(door, :get_state) == :locked
+    ExMachina.cast("door", {:input_event, 1})
+    assert ExMachina.call("door", :get_state) == :locked
 
-    :gen_statem.cast(door, {:input_event, 2})
-    assert :gen_statem.call(door, :get_state) == :locked
+    ExMachina.cast("door", {:input_event, 2})
+    assert ExMachina.call("door", :get_state) == :locked
 
-    :gen_statem.cast(door, {:input_event, 3})
+    ExMachina.cast("door", {:input_event, 3})
 
     # Verify that it is unlocked after the correct code is entered
-    assert :gen_statem.call(door, :get_state) == :open
+    assert ExMachina.call("door", :get_state) == :open
     :timer.sleep(5000)
 
     # Verify that it is locked again after the specified time
-    assert :gen_statem.call(door, :get_state) == :locked
+    assert ExMachina.call("door", :get_state) == :locked
 
 
     send(door, "Another input message !!!")
 
-    assert :gen_statem.call(door, :get_state) == :locked
+    assert ExMachina.call("door", :get_state) == :locked
 
-    :gen_statem.cast(door, {:input_event, 1})
+    ExMachina.cast("door", {:input_event, 1})
     :timer.sleep(1500)
 
-    :gen_statem.cast(door, {:input_event, 1})
-    assert :gen_statem.call(door, :get_state) == :locked
+    ExMachina.cast("door", {:input_event, 1})
+    assert ExMachina.call("door", :get_state) == :locked
 
-    :gen_statem.cast(door, {:input_event, 2})
-    assert :gen_statem.call(door, :get_state) == :locked
+    ExMachina.cast("door", {:input_event, 2})
+    assert ExMachina.call("door", :get_state) == :locked
 
-    :gen_statem.cast(door, {:input_event, 3})
+    ExMachina.cast("door", {:input_event, 3})
 
     # Verify that it is unlocked after the correct code is entered
-    assert :gen_statem.call(door, :get_state) == :open
+    assert ExMachina.call("door", :get_state) == :open
     :timer.sleep(5000)
 
     # Verify that it is locked again after the specified time
-    assert :gen_statem.call(door, :get_state) == :locked    
+    assert ExMachina.call("door", :get_state) == :locked    
   end
 end
