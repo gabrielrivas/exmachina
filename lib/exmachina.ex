@@ -56,7 +56,8 @@ defmodule ExMachina do
   end
 
   @impl true
-  def terminate(_reason, _state, _data) do
+  def terminate(_reason, _state, data) do
+    IO.puts("Terminate : #{data.name}")
     :ok
   end
   
