@@ -57,7 +57,7 @@ defmodule ExMachina do
 
   @impl true
   def terminate(_reason, _state, _data) do
-    :void
+    :ok
   end
   
   def call(fsm_name, args) do
