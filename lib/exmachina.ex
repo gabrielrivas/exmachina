@@ -74,7 +74,7 @@ defmodule ExMachina do
   ### Client API
   # ...
   def handle_event({:call, from}, :get_data, state, fsm_object) do
-    {:next_state, state, fsm_object, [{:reply, from, fsm_object}]}
+    {:next_state, state, fsm_object, [{:reply, from, fsm_object.data}]}
   end
 
   def handle_event({:call, from}, :get_state, state, fsm_object) do

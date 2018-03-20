@@ -83,15 +83,11 @@ defmodule GeneratorTest do
                 |> Map.put(:transition_table, transitions)
                 |> Map.put(:timeout, @period_time)
 
-      {:ok, gen} = ExMachina.start_link(test_fsm, @period_time)                     
-      {:ok, gen2} = ExMachina.start_link(test_fsm2, @period_time)
-
-      #Test info handler
-      send(gen, "Hello from fsm1")
-      send(gen2, "Hello from fsm2")
+      ExMachina.start_link(test_fsm, @period_time)                     
+      ExMachina.start_link(test_fsm2, @period_time)
   
       #Get FSM data from its name
-      ExMachina.call("fsm2", :get_data)
+      ExMachina.call("fsm2", :get_data) |> IO.inspect
 
       :timer.sleep(5000)
       
