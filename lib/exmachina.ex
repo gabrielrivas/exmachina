@@ -3,7 +3,7 @@ defmodule ExMachina do
 
   # Client API
   def start_link(fsm_object, timeout) do
-    :gen_statem.start({:global, fsm_object.name}, __MODULE__, [{fsm_object, timeout}], [])
+    :gen_statem.start_link({:global, fsm_object.name}, __MODULE__, [{fsm_object, timeout}], [])
   end
 
   defp locate_process(key) do
@@ -57,7 +57,7 @@ defmodule ExMachina do
 
   @impl true
   def terminate(_reason, _state, _data) do
-    :void
+    :ok
   end
   
   def call(fsm_name, args) do
