@@ -19,7 +19,6 @@ defmodule ExMachina do
   def check_gproc(fsm_name)  do
     case locate_process(fsm_name) do
       {:none, nil, fsm_name} ->
-        IO.puts "FSM not registered : #{fsm_name}"
         :none
       {:ok, pid, _fsm_name} ->
         pid
