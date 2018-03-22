@@ -20,10 +20,9 @@ defmodule ExMachina do
     case locate_process(fsm_name) do
       {:none, nil, fsm_name} ->
         IO.puts "FSM not registered : #{fsm_name}"
-          # Register it as running before kicking off the process!
-          :gproc.reg({:n, :l, {:efsm, fsm_name}})
-        {:ok, pid, _fsm_name} ->
-            pid
+        :none
+      {:ok, pid, _fsm_name} ->
+        pid
     end   
   end 
 
@@ -49,6 +48,10 @@ defmodule ExMachina do
            {:ok, data}-> #Update fsm state data
                          new_fsm_object = fsm_object |> Map.put(:data, data)
                          check_gproc(new_fsm_object.name)
+                           |> case do 
+                                :none -> :gproc.reg({:n, :l, {:efsm, fsm_name}})
+                                _     -> IO.puts("FSM Already registered")
+                              end  
                          {:ok, fsm_object.initial_state, new_fsm_object, [{:state_timeout, timeout, :stop_after_timeout}]}                
           _   -> IO.puts "Error initializing FSM"                      
                  {:error, fsm_object.initial_state, fsm_object, [{:state_timeout, timeout, :stop_after_timeout}]}
