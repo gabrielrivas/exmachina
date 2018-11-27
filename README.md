@@ -25,4 +25,4 @@ mix test test/door_code_test/exmachina_door_test.exs
 
 mix test test/sequence_generator/generator_test.ex 
 
-mix test test/cat_fsm/exmachina_cat_test.ex 
+mix test test/cat_fsm/exmachina_cat_test.exs
