@@ -113,6 +113,7 @@ defmodule ExMachina do
   end
 
   # Event Driven Timeout
+  #This event will be triggered on getting the state machine :timeout
   def handle_event(:state_timeout, :stop_after_timeout, state, %FSMCore{type: :event_driven} = fsm_object) do
     # On state timeout apply function to re-initialize data
     fsm_object = apply(fsm_object.module_logic, fsm_object.reset_function, [fsm_object.data])
