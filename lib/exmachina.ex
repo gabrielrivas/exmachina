@@ -1,26 +1,30 @@
 defmodule ExMachina do
   @behaviour :gen_statem
 
-  # Client API
+  @doc """
+  Starts a gen_statem process that is linked to the calling process.
+  Args:
+  -fsm_object : Populated FSMCore object.
+  -timeout : Maximum time remain on a state.
+  Returns {:ok, pid, key}
+  """
   def start_link(fsm_object, timeout) do
     :gen_statem.start_link({:global, fsm_object.name}, __MODULE__, [{fsm_object, timeout}], [])
   end
 
-  defp locate_process(key) do
-    # Check for a client first...
-    case :gproc.whereis_name({:n, :l, {:efsm, key}}) do
-      :undefined ->
-        {:none, nil, key}
-      pid->
-        {:ok, pid, key}
-    end
-  end
-
+  @doc """
+  Locate process by name
+  Args:
+  -key : Name used to find out if a process is registered in gproc.
+  Returns:
+  - :none : When process is found
+  - pid value : When process is not found
+  """
   def check_gproc(fsm_name)  do
-    case locate_process(fsm_name) do
-      {:none, nil, fsm_name} ->
+    case :gproc.whereis_name({:n, :l, {:efsm, fsm_name}}) do
+      :undefined ->
         :none
-      {:ok, pid, _fsm_name} ->
+      pid ->
         pid
     end   
   end 
@@ -72,17 +76,23 @@ defmodule ExMachina do
       :gen_statem.cast(args)
   end
 
-  # ...
-  ### Client API
-  # ...
+  @doc """
+  Gets FSM process data
+  """
   def handle_event({:call, from}, :get_data, state, fsm_object) do
     {:next_state, state, fsm_object, [{:reply, from, fsm_object.data}]}
   end
 
+  @doc """
+  Gets FSM process current state
+  """
   def handle_event({:call, from}, :get_state, state, fsm_object) do
     {:next_state, state, fsm_object, [{:reply, from, state}]}
   end
 
+  @doc """
+  Info event handler
+  """
   def handle_event(:info, info_data, state, fsm_object) do    
     apply(fsm_object.module_logic, fsm_object.info_handler, [fsm_object.data, info_data])
       |> case do
@@ -94,16 +104,19 @@ defmodule ExMachina do
     end    
   end
 
+  @doc """
+  Input event handler for the FSM process. 
+  """
   @impl :gen_statem
   def handle_event(:cast, {:input_event, input_value}, state, fsm_object) do
-    #[1] Map input to fsm event
+    #Map input to fsm event
     {input_mapped_value, data} = apply(fsm_object.module_logic, fsm_object.input_maping_function, [state, input_value, fsm_object.data])
     
-    #[2] Update fsm state data
+    #Update fsm state data
     fsm_object = fsm_object
                    |> Map.put(:data, data)
 
-    #[3] Determine what the next state is from the transition table                
+    #Determine what the next state is from the transition table                
     (for transition <- fsm_object.transition_table,((input_mapped_value == transition.input_value) && (state == transition.current_state)),do: {transition.next_state, transition.timeout})
       |> List.first
       |> case do
@@ -112,8 +125,10 @@ defmodule ExMachina do
          end    
   end
 
-  # Event Driven Timeout
-  #This event will be triggered on getting the state machine :timeout
+  @doc """
+  Event Driven Timeout 
+  On event driven FSM processes, this will be triggered when stayin on a state for too long (timeout).
+  """
   def handle_event(:state_timeout, :stop_after_timeout, state, %FSMCore{type: :event_driven} = fsm_object) do
     # On state timeout apply function to re-initialize data
     fsm_object = apply(fsm_object.module_logic, fsm_object.reset_function, [fsm_object.data])
@@ -132,15 +147,18 @@ defmodule ExMachina do
          end  
   end
 
-  # Time driven timeout
+  @doc """
+  Time Driven Timeout 
+  This event will be triggered periodically and will make the FSM process transition to the next state at every :timeout
+  """
   def handle_event(:state_timeout, :stop_after_timeout, state, %FSMCore{type: :time_driven} = fsm_object) do
-    #[1] Process current state
+    #Process current state
     apply(fsm_object.module_logic, fsm_object.state_process, [state, fsm_object.data])
       |> case do
            {:error, _data} -> {:next_state, state, fsm_object, [{:state_timeout, fsm_object.timeout, :stop_after_timeout}]}
            {result_value, data} -> fsm_object = fsm_object |> Map.put(:data, data)
 
-                          #[3] Determine what the next state is from the transition table                
+                          #Determine what the next state is from the transition table                
                           (for transition <- fsm_object.transition_table,((result_value == transition.process_result) && (state == transition.current_state)), do: {transition.next_state, transition.timeout})
                           |> List.first
                           |> case do

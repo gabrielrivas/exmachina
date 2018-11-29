@@ -1,6 +1,6 @@
 # Exmachina
 
-**TODO: Add description**
+Exmachina is a Finite State Machine engine.
 
 ## Installation
 
